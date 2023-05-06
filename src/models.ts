@@ -1,31 +1,39 @@
-enum BillType {
+import { z } from "zod";
+
+export enum BillType {
     AtSight,
     Usuance,
 };
 
-type Unique = {
-    id: number;
-};
+export const metaSchema = z.object({ 
+    id: z.number().int().positive()
+});
 
-type LineOfCredit = Unique & {   
-    obligorId: number;
-    limit: number;
-    balance: number;
-};
+export const lineOfCreditSchema = metaSchema.extend({
+    obligorId: z.number().int().positive(),
+    limit: z.number().int().positive(),
+    balance: z.number().int().positive(),
+});
 
-type LetterOfCredit = Unique & {  
-    issuer: string;
-    beneficiary: string;
-    locId: number;
-    balance: number;
-};
 
-type ImportBill = Unique & {
-    amount: number;
-    dueDate: Date;
-    lcId: number;
-    locId: number;
-    type: BillType;
-};
+export const letterOfCreditSchema = metaSchema.extend({
+    issuer: z.string(),
+    beneficiary: z.string(),
+    locId: z.number().int().positive(),
+    balance: z.number().nonnegative(),
+})
 
-export { BillType, LineOfCredit, LetterOfCredit, ImportBill };
+
+export const importBillSchema = metaSchema.extend({
+    amount: z.number().nonnegative(),
+    dueDate: z.string().datetime(),
+    lcId: z.number().int().positive(),
+    locId: z.number().int().positive(),
+    type: z.nativeEnum(BillType),
+
+});
+
+export type Meta = z.infer<typeof metaSchema>;
+export type LineOfCredit = z.infer<typeof lineOfCreditSchema>;
+export type LetterOfCredit = z.infer<typeof letterOfCreditSchema>;
+export type ImportBill = z.infer<typeof importBillSchema>;
