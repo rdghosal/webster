@@ -5,7 +5,7 @@ export enum BillType {
     Usuance,
 };
 
-export const metaSchema = z.object({ 
+export const metaSchema = z.object({
     id: z.number().int().positive()
 });
 
