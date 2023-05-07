@@ -1,6 +1,5 @@
 import * as fs from "fs";
-import * as csv from "csv-parse";
-
+import * as Papa from "papaparse";
 
 /*
  * TODO
@@ -11,9 +10,10 @@ import * as csv from "csv-parse";
  * 4. print L/Cs and Import Bills that are orphaned. (save to a .log?)
  * 5. spit out the json for line of credits and their children that check out
  */
-
-fs.createReadStream('./test.csv')
- .pipe(csv.parse({ delimiter: ',', from_line: 2}))
- .on('data', (d) => { console.log(d) })
- .on('end', () => { console.log("done!") })
- .on('error', (e) => { console.log(e.message) });
+const s: fs.ReadStream = fs.createReadStream(__dirname + "/test.csv");
+Papa.parse(s, {
+    header: true,
+    complete: (results) => {
+        console.log(results.data);
+    }
+});

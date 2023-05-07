@@ -1,7 +1,9 @@
-test('greeting is hello world', () => {
+import { faker } from "@faker-js/faker";
+import { z } from "zod";
+import * as models from "../src/models";
 
-    // expect(2 + 2).toBe(4);
-    
-    const greeting: string = "hello world";
-    expect(greeting).toBe("hello world");
+test('greeting is hello world', () => {
+    z.coerce.date().parse("2022-01-01");
+    models.importBillSchema
 });
+
