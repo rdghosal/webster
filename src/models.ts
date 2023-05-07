@@ -17,8 +17,8 @@ export const lineOfCreditSchema = metaSchema.extend({
 
 
 export const letterOfCreditSchema = metaSchema.extend({
-    issuer: z.string(),
-    beneficiary: z.string(),
+    issuerId: z.string(),
+    beneficiaryId: z.string(),
     locId: z.number().int().positive(),
     balance: z.number().nonnegative(),
 })
