@@ -13,25 +13,25 @@ type ParsedRow = Record<string, string | number | Date>;
 export class FileParser {
 
     static csvSchema: CsvSchema = {
-        "line_of_credits": {
-            "id": z.coerce.number().positive(),
-            "obligorId": z.coerce.number().positive(),
-            "limit": z.coerce.number().nonnegative(),
-            "balance": z.coerce.number().nonnegative(),
+        line_of_credits: {
+            id: z.coerce.number().positive(),
+            obligorId: z.coerce.number().positive(),
+            limit: z.coerce.number().nonnegative(),
+            balance: z.coerce.number().nonnegative(),
         },
-        "letter_of_credits": {
-            "id": z.coerce.number().positive(),
-            "issuerId": z.coerce.number().positive(),
-            "beneficiaryId": z.coerce.number().positive(),
-            "locId": z.coerce.number().positive(),
-            "balance": z.coerce.number().nonnegative(),
+        letter_of_credits: {
+            id: z.coerce.number().positive(),
+            issuerId: z.coerce.number().positive(),
+            beneficiaryId: z.coerce.number().positive(),
+            locId: z.coerce.number().positive(),
+            balance: z.coerce.number().nonnegative(),
         },
-        "import_bills": {
-            "id": z.coerce.number().positive(),
-            "dueDate": z.coerce.date(), // todo
-            "lcId": z.coerce.number().positive(),
-            "locId": z.coerce.number().positive(),
-            "amount": z.coerce.number().nonnegative(),
+        import_bills: {
+            id: z.coerce.number().positive(),
+            dueDate: z.coerce.date(), // todo
+            lcId: z.coerce.number().positive(),
+            locId: z.coerce.number().positive(),
+            amount: z.coerce.number().nonnegative(),
         },
     };
 
