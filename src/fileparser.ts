@@ -2,37 +2,17 @@ import * as fs from "fs";
 import * as Papa from "papaparse";
 import * as path from "path";
 import { z } from "zod";
+import { importBillSchema, letterOfCreditSchema, lineOfCreditSchema } from "./models";
 
-type CsvSchema = {
-    [filename: string]: { [field: string]: z.ZodType }
-};
-
+type CsvSchema = { [filename: string]: z.ZodObject<{[field: string]: z.ZodType}> };
 type CsvRow = Record<string, string>;
 type ParsedRow = Record<string, string | number | Date>;
 
 export class FileParser {
-
     static csvSchema: CsvSchema = {
-        line_of_credits: {
-            id: z.coerce.number().positive(),
-            obligorId: z.coerce.number().positive(),
-            limit: z.coerce.number().nonnegative(),
-            balance: z.coerce.number().nonnegative(),
-        },
-        letter_of_credits: {
-            id: z.coerce.number().positive(),
-            issuerId: z.coerce.number().positive(),
-            beneficiaryId: z.coerce.number().positive(),
-            locId: z.coerce.number().positive(),
-            balance: z.coerce.number().nonnegative(),
-        },
-        import_bills: {
-            id: z.coerce.number().positive(),
-            dueDate: z.coerce.date(), // todo
-            lcId: z.coerce.number().positive(),
-            locId: z.coerce.number().positive(),
-            amount: z.coerce.number().nonnegative(),
-        },
+        line_of_credits: lineOfCreditSchema,
+        letter_of_credits: letterOfCreditSchema,
+        import_bills: importBillSchema,
     };
 
     public static stripExtension(filename: string): string {
@@ -40,12 +20,8 @@ export class FileParser {
     };
 
     private static mapRowDataTypes(filename: string, row: CsvRow): Record<string, any> {
-        let mapped: {[k: string]: any} = { ...row };
-        Object.keys(FileParser.csvSchema[FileParser.stripExtension(filename)]).forEach((k, _) => {
-            const mapper = FileParser.csvSchema[FileParser.stripExtension(filename)][k];
-            mapped[k] = mapper.parse(row[k]);
-        });
-        return mapped;
+        const mapper = FileParser.csvSchema[FileParser.stripExtension(filename)]
+        return mapper.parse(row);
     };
 
     public static async parse(filename: string): Promise<ParsedRow[]> {

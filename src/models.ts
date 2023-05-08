@@ -6,31 +6,30 @@ export enum BillType {
 };
 
 export const metaSchema = z.object({
-    id: z.number().int().positive()
+    id: z.coerce.number().int().positive()
 });
 
 export const lineOfCreditSchema = metaSchema.extend({
-    obligorId: z.number().int().positive(),
-    limit: z.number().int().positive(),
-    balance: z.number().int().positive(),
+    obligorId: z.coerce.number().int().positive(),
+    limit: z.coerce.number().int().positive(),
+    balance: z.coerce.number().int().positive(),
 });
 
 
 export const letterOfCreditSchema = metaSchema.extend({
-    issuerId: z.string(),
-    beneficiaryId: z.string(),
-    locId: z.number().int().positive(),
-    balance: z.number().nonnegative(),
+    issuerId: z.coerce.string(),
+    beneficiaryId: z.coerce.string(),
+    locId: z.coerce.number().int().positive(),
+    balance: z.coerce.number().nonnegative(),
 })
 
 
 export const importBillSchema = metaSchema.extend({
-    amount: z.number().nonnegative(),
-    dueDate: z.string().datetime(),
-    lcId: z.number().int().positive(),
-    locId: z.number().int().positive(),
-    type: z.nativeEnum(BillType),
-
+    amount: z.coerce.number().nonnegative(),
+    dueDate: z.coerce.date(),
+    lcId: z.coerce.number().int().positive(),
+    locId: z.coerce.number().int().positive(),
+    type: z.coerce.string(),
 });
 
 export type Meta = z.infer<typeof metaSchema>;
