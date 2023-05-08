@@ -8,6 +8,7 @@ type CsvSchema = {
 };
 
 type CsvRow = Record<string, string>;
+type ParsedRow = Record<string, string | number | Date>;
 
 export class FileParser {
 
@@ -34,33 +35,29 @@ export class FileParser {
         },
     };
 
-    private static stripExtension(filename: string): string {
+    public static stripExtension(filename: string): string {
         return filename.split('.')[0];
-    }
+    };
 
     private static mapRowDataTypes(filename: string, row: CsvRow): Record<string, any> {
         let mapped: {[k: string]: any} = { ...row };
-        Object.keys(this.csvSchema[this.stripExtension(filename)]).forEach((k, _) => {
-            const mapper = this.csvSchema[this.stripExtension(filename)][k];
+        Object.keys(FileParser.csvSchema[FileParser.stripExtension(filename)]).forEach((k, _) => {
+            const mapper = FileParser.csvSchema[FileParser.stripExtension(filename)][k];
             mapped[k] = mapper.parse(row[k]);
-            // mapped[k] = mapper(row[k]);
         });
         return mapped;
     };
 
-    public static parse<T>(filename: string): void {
-        const s: fs.ReadStream = fs.createReadStream(
-            path.join(path.dirname(__dirname), 'static', filename)
+    public static async parse(filename: string): Promise<ParsedRow[]> {
+        const s: string = await fs.promises.readFile(
+            path.join(path.dirname(__dirname), 'static', filename),
+            'utf8'
         );
-        Papa.parse(s, {
+        const result: Papa.ParseResult<CsvRow>  = Papa.parse(s, {
             header: true,
-            complete: (results) => {
-                let mappedRows: Record<string, any>[] = [];
-                results.data.forEach((row, idx) => {
-                    mappedRows.push(this.mapRowDataTypes(filename, row as CsvRow));
-                });
-                console.log(mappedRows);
-            }
+            // dynamicTyping: true, /* zod handles type coercions */
+            skipEmptyLines: true,
         });
+        return result.data.map(row => this.mapRowDataTypes(filename, row));
     };
-}
+};

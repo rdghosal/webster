@@ -1,4 +1,7 @@
 import { FileParser } from "./fileparser";
+import MockDb from "./client";
+
+const db = new MockDb();
 
 /*
  * TODO
@@ -10,6 +13,12 @@ import { FileParser } from "./fileparser";
  * 5. spit out the json for line of credits and their children that check out
  */
 
-FileParser.parse('line_of_credits.csv');
-FileParser.parse('letter_of_credits.csv');
-FileParser.parse('import_bills.csv');
+(() =>  {
+    ['line_of_credits.csv', 'letter_of_credits.csv', 'import_bills.csv']
+        .forEach(async (filename) => {
+            const parsed = await FileParser.parse(filename);
+            const collection = FileParser.stripExtension(filename);
+            db.write(collection, ...parsed);
+            console.log(db.read(collection)[0]);
+        })
+})();
